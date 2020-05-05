@@ -18,9 +18,9 @@ Vagrant.configure("2") do |config|
     master.vm.hostname = "kube-master"
     master.vm.network "private_network", ip: "192.168.200.100"
     master.vm.provision "shell", inline: <<-SHELL
-      #curl -sL https://raw.githubusercontent.com/theprotos/cookbooks-generic/development/scripts/linux.sh | sudo bash -s apply linux-k8s.json development
+      curl -sL https://raw.githubusercontent.com/theprotos/cookbooks-generic/development/scripts/linux.sh | sudo bash -s apply linux-k8s.json development
       cd /vagrant
-      ./master-calico.sh
+      ./scripts/master-calico.sh
     SHELL
     master.vm.ignore_box_vagrantfile = true
     #master.vm.box_check_update = false
@@ -43,9 +43,9 @@ Vagrant.configure("2") do |config|
       node.vm.hostname = "kube-node#{i}"
       node.vm.network "private_network", ip: "192.168.200.10#{i}"
       node.vm.provision "shell", inline: <<-SHELL
-        #curl -sL https://raw.githubusercontent.com/theprotos/cookbooks-generic/development/scripts/linux.sh | sudo bash -s apply linux-k8s.json development
+        curl -sL https://raw.githubusercontent.com/theprotos/cookbooks-generic/development/scripts/linux.sh | sudo bash -s apply linux-k8s.json development
         cd /vagrant
-        ./worker.sh
+        ./scripts/worker.sh
       SHELL
       node.vm.ignore_box_vagrantfile = true
       #node.vm.box_check_update = false
