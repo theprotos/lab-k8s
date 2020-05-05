@@ -2,45 +2,46 @@
 # vagrant up; vagrant rsync-auto
 #
 
+#require_relative 'env.rb'
+#include MyEnv
+
 Vagrant.configure("2") do |config|
 
-  config.vm.define "node1" do |node1|
-    node1.vm.box = "linux-generic"
-    node1.vm.hostname = "kube-master"
-    node1.vm.network "private_network", ip: "192.168.200.100"
-    node1.vm.provision "shell", inline: <<-SHELL
-         curl -sL https://raw.githubusercontent.com/theprotos/cookbooks-generic/development/scripts/linux.sh | sudo bash -s apply linux-k8s.json development
+  config.vm.define "master" do |master|
+    master.vm.ignore_box_vagrantfile = true
+    master.vm.box = "linux-generic"
+    master.vm.hostname = "kube-master"
+    master.vm.network "private_network", ip: "192.168.200.100"
+    master.vm.provision "shell", inline: <<-SHELL
+      curl -sL https://raw.githubusercontent.com/theprotos/cookbooks-generic/development/scripts/linux.sh | sudo bash -s apply linux-k8s.json development
+      cd /vagrant
+      ./master.sh
     SHELL
-#    node1.vm.synced_folder ".", "/vagrant",
-#        type: "rsync",
-#        rsync__auto: true,
-#        rsync__exclude: ['Vagrantfile'],
-#        rsync__args: ["-z"]
-    node1.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+    master.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+    #master.vm.synced_folder ".", "/vagrant",
+    #  type: "rsync",
+    #  rsync__auto: true,
+    #  rsync__exclude: ['Vagrantfile'],
+    #  rsync__args: ["-z"]
   end
 
-  config.vm.define "node2" do |node2|
-    node2.vm.box = "linux-generic"
-    node2.vm.hostname = "kube-node1"
-    node2.vm.network "private_network", ip: "192.168.200.101"
-#    node2.vm.synced_folder ".", "/vagrant",
-#        type: "rsync",
-#        rsync__auto: true,
-#        rsync__exclude: ['Vagrantfile'],
-#        rsync__args: ["-z"]
-    node2.vm.synced_folder ".", "/vagrant", type: "virtualbox"
-  end
-
-    config.vm.define "node3" do |node3|
-      node3.vm.box = "linux-generic"
-      node3.vm.hostname = "kube-node2"
-      node3.vm.network "private_network", ip: "192.168.200.102"
-  #    node3.vm.synced_folder ".", "/vagrant",
-  #        type: "rsync",
-  #        rsync__auto: true,
-  #        rsync__exclude: ['Vagrantfile'],
-  #        rsync__args: ["-z"]
-      node3.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+  (1..1).each do |i|
+    config.vm.define "node-#{i}" do |node|
+      node.vm.ignore_box_vagrantfile = true
+      node.vm.box = "linux-generic"
+      node.vm.hostname = "kube-node#{i}"
+      node.vm.network "private_network", ip: "192.168.200.10#{i}"
+      node.vm.provision "shell", inline: <<-SHELL
+          curl -sL https://raw.githubusercontent.com/theprotos/cookbooks-generic/development/scripts/linux.sh | sudo bash -s apply linux-k8s.json development
+          cd /vagrant
+          ./worker.sh
+      SHELL
+      node.vm.synced_folder ".", "/vagrant", type: "virtualbox"
+      #node.vm.synced_folder ".", "/vagrant",
+      #  type: "rsync",
+      #  rsync__auto: true,
+      #  rsync__exclude: ['Vagrantfile'],
+      #  rsync__args: ["-z"]
     end
-
+  end
 end
