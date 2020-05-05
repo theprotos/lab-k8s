@@ -1,3 +1,5 @@
 *.iml
 .idea
 .vagrant
+join_token.txt
+*.log
