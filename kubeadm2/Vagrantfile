@@ -1,47 +1,65 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
 #
 # vagrant up; vagrant rsync-auto
 #
 
-#require_relative 'env.rb'
-#include MyEnv
+require_relative 'env.rb'
+include MyEnv
 
 Vagrant.configure("2") do |config|
 
+  config.ssh.username = "vagrant"
+  config.ssh.password = "vagrant"
+
   config.vm.define "master" do |master|
-    master.vm.ignore_box_vagrantfile = true
-    master.vm.box = "linux-generic"
+    master.vm.box = "linux-k8s"
     master.vm.hostname = "kube-master"
     master.vm.network "private_network", ip: "192.168.200.100"
     master.vm.provision "shell", inline: <<-SHELL
-      curl -sL https://raw.githubusercontent.com/theprotos/cookbooks-generic/development/scripts/linux.sh | sudo bash -s apply linux-k8s.json development
+      #curl -sL https://raw.githubusercontent.com/theprotos/cookbooks-generic/development/scripts/linux.sh | sudo bash -s apply linux-k8s.json development
       cd /vagrant
-      ./master.sh
+      ./master-calico.sh
     SHELL
+    master.vm.ignore_box_vagrantfile = true
+    #master.vm.box_check_update = false
     master.vm.synced_folder ".", "/vagrant", type: "virtualbox"
-    #master.vm.synced_folder ".", "/vagrant",
-    #  type: "rsync",
-    #  rsync__auto: true,
-    #  rsync__exclude: ['Vagrantfile'],
-    #  rsync__args: ["-z"]
+    master.vm.provider :virtualbox do |vb|
+      #vb.gui = true
+      #vb.name = HOSTNAME
+      vb.memory = 2048
+      vb.cpus = 2
+      vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+      vb.customize ["modifyvm", :id, "--ioapic", "on"]
+      vb.customize ["modifyvm", :id, "--description", "k8s master node"]
+      vb.customize ["modifyvm", :id, "--cpuexecutioncap", "100"]
+    end
   end
 
   (1..1).each do |i|
     config.vm.define "node-#{i}" do |node|
-      node.vm.ignore_box_vagrantfile = true
-      node.vm.box = "linux-generic"
+      node.vm.box = "linux-k8s"
       node.vm.hostname = "kube-node#{i}"
       node.vm.network "private_network", ip: "192.168.200.10#{i}"
       node.vm.provision "shell", inline: <<-SHELL
-          curl -sL https://raw.githubusercontent.com/theprotos/cookbooks-generic/development/scripts/linux.sh | sudo bash -s apply linux-k8s.json development
-          cd /vagrant
-          ./worker.sh
+        #curl -sL https://raw.githubusercontent.com/theprotos/cookbooks-generic/development/scripts/linux.sh | sudo bash -s apply linux-k8s.json development
+        cd /vagrant
+        ./worker.sh
       SHELL
+      node.vm.ignore_box_vagrantfile = true
+      #node.vm.box_check_update = false
       node.vm.synced_folder ".", "/vagrant", type: "virtualbox"
-      #node.vm.synced_folder ".", "/vagrant",
-      #  type: "rsync",
-      #  rsync__auto: true,
-      #  rsync__exclude: ['Vagrantfile'],
-      #  rsync__args: ["-z"]
+      node.vm.provider :virtualbox do |vb|
+        #vb.gui = true
+        #vb.name = HOSTNAME
+        vb.memory = 2048
+        vb.cpus = 2
+        vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+        vb.customize ["modifyvm", :id, "--ioapic", "on"]
+        vb.customize ["modifyvm", :id, "--description", "k8s worker node"]
+        vb.customize ["modifyvm", :id, "--cpuexecutioncap", "100"]
+      end
     end
   end
 end
