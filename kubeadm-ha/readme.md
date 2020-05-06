@@ -2,8 +2,7 @@ https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm/
 
 
 
-kubectl get pods -n kube-system -o wide
-kubectl get pods --all-namespaces
+kubectl get pods --all-namespaces -o wide
 
 systemctl daemon-reload
 sudo systemctl restart kubelet

@@ -13,7 +13,7 @@ kubectl get nodes
 
 kubectl run hello-nginx --image=nginx --port=80
 kubectl get pods
-kubectl describe pod hello
+kubectl describe pod hello-nginx
 kubectl expose deployment hello-nginx --type=NodePort
 kubectl get service
 kubectl describe service hello-nginx

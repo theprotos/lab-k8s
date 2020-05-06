@@ -710,7 +710,8 @@ cloud-init[506]: Cloud-init v. 19.4-33-gbb4131a2-0ubuntu1~16.04.1 running 'init-
 [   22.488843] cloud-init[1395]:   en_US.UTF-8... done
 [   22.490967] cloud-init[1395]: Generation complete.
 [   23.076321] cloud-init[1395]: Cloud-init v. 19.4-33-gbb4131a2-0ubuntu1~16.04.1 running 'modules:config' at Tue, 05 May 2020 10:41:57 +0000. Up 19.73 seconds.
-
+
+
 Ubuntu 16.04.6 LTS ubuntu-xenial ttyS0
 
 ubuntu-xenial login: ci-info: no authorized SSH keys fingerprints found for user ubuntu.
