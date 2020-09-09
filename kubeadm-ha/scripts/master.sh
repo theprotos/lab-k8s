@@ -11,4 +11,4 @@ kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/down
 
 printf "\n$(date +%T) ==========[ Deploy dashboard ]==========\n"
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0/aio/deploy/recommended.yaml
-kubectl proxy --port=8080 &
+kubectl proxy --port=8080 --address='192.168.200.100' --accept-hosts='.*' &
