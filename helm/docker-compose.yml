@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+
+  chartmuseum:
+    image: docker.io/bitnami/chartmuseum
+    container_name: chartmuseum
+    deploy:
+      replicas: 1
+    ports:
+      - 8080:8080
+    volumes:
+      - chartmuseum_data:/bitnami/data
+
+volumes:
+  chartmuseum_data:
+    driver: local

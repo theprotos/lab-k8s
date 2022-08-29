@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+  getip:
+    image: docker.io/yeasy/simple-web
+    ports:
+      - "8080:80"
+    deploy:
+      mode: replicated
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
